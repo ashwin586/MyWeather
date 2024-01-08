@@ -7,7 +7,6 @@ const Weather = () => {
   const [data, setData] = useState({});
   const [lat, setLat] = useState(null);
   const [long, setLong] = useState(null);
-
   useEffect(() => {
     const defaultWeatherResponse = async () => {
       navigator.geolocation.getCurrentPosition(async (position) => {
@@ -21,7 +20,6 @@ const Weather = () => {
             `https://api.openweathermap.org/data/2.5/weather/?lat=${lat}&lon=${long}&units=metric&appid=${process.env.REACT_APP_OPENWEATHERAPI}`
           );
           setData(response.data);
-          console.log(response.data);
         }
       } catch (err) {
         console.log(err);
@@ -37,7 +35,7 @@ const Weather = () => {
         `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${process.env.REACT_APP_OPENWEATHERAPI}`
       );
       setData(response.data);
-      setCity("")
+      setCity("");
     } catch (err) {
       console.log(err);
     }
@@ -61,6 +59,9 @@ const Weather = () => {
         {data && (
           <div className="weather-info">
             <div className="temperature">
+              {data?.weather && data?.weather[0] && (
+                <img src={`https://openweathermap.org/img/wn/${data?.weather[0]?.icon}@2x.png`} alt="Weather-Icon" />
+              )}
               <h1>{`${Math.floor(data?.main?.temp)}°C`}</h1>
               <div className="temp-details">
                 <h4>Max Temp: {Math.floor(data?.main?.temp_max)}°C</h4>
@@ -73,7 +74,9 @@ const Weather = () => {
             <div className="other-details">
               <h4>
                 <span className="gap">Humidity: {data?.main?.humidity}%</span> |{" "}
-                <span className="gap">Pressure: {data?.main?.pressure} hPa</span>
+                <span className="gap">
+                  Pressure: {data?.main?.pressure} hPa
+                </span>
               </h4>
             </div>
           </div>
