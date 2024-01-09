@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Spinner } from "@chakra-ui/react";
 import axios from "axios";
 import "./Weather.css";
 
@@ -7,6 +8,7 @@ const Weather = () => {
   const [data, setData] = useState({});
   const [lat, setLat] = useState(null);
   const [long, setLong] = useState(null);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const defaultWeatherResponse = async () => {
       navigator.geolocation.getCurrentPosition(async (position) => {
@@ -16,6 +18,7 @@ const Weather = () => {
 
       try {
         if (lat && long) {
+          setLoading(true);
           const response = await axios.get(
             `https://api.openweathermap.org/data/2.5/weather/?lat=${lat}&lon=${long}&units=metric&appid=${process.env.REACT_APP_OPENWEATHERAPI}`
           );
@@ -24,6 +27,7 @@ const Weather = () => {
       } catch (err) {
         console.log(err);
       }
+      setLoading(false);
     };
     defaultWeatherResponse();
   }, [lat, long]);
@@ -31,6 +35,7 @@ const Weather = () => {
   const searchCity = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true)
       const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${process.env.REACT_APP_OPENWEATHERAPI}`
       );
@@ -39,12 +44,14 @@ const Weather = () => {
     } catch (err) {
       console.log(err);
     }
+    setLoading(false);
   };
 
   return (
     <>
       <div className="weather-container">
         <div className="search-wrapper">
+          {loading && <Spinner size="xl" />}
           <form onSubmit={(e) => searchCity(e)}>
             <input
               type="text"
@@ -60,7 +67,10 @@ const Weather = () => {
           <div className="weather-info">
             <div className="temperature">
               {data?.weather && data?.weather[0] && (
-                <img src={`https://openweathermap.org/img/wn/${data?.weather[0]?.icon}@2x.png`} alt="Weather-Icon" />
+                <img
+                  src={`https://openweathermap.org/img/wn/${data?.weather[0]?.icon}@2x.png`}
+                  alt="Weather-Icon"
+                />
               )}
               <h1>{`${Math.floor(data?.main?.temp)}°C`}</h1>
               <div className="temp-details">
