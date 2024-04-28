@@ -19,12 +19,12 @@ const Weather = () => {
       try {
         if (lat && long) {
           setLoading(true);
-          // const response = await axios.get(
-          //   `https://api.openweathermap.org/data/2.5/weather/?lat=${lat}&lon=${long}&units=metric&appid=${process.env.REACT_APP_OPENWEATHERAPI}`
-          // );
           const response = await axios.get(
-            `https://api.openweathermap.org/data/2.5/weather/?lat=${lat}&lon=${long}&units=metric&appid=1972ad98989c7a5ceefa8eb67845a559`
+            `https://api.openweathermap.org/data/2.5/weather/?lat=${lat}&lon=${long}&units=metric&appid=${process.env.REACT_APP_API}`
           );
+          // const response = await axios.get(
+          //   `https://api.openweathermap.org/data/2.5/weather/?lat=${lat}&lon=${long}&units=metric&appid=1972ad98989c7a5ceefa8eb67845a559`
+          // );
           setData(response.data);
         }
       } catch (err) {
