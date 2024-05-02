@@ -8,5 +8,5 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* background-image: linear-gradient(to right, #43cea2, #185a9d); */
+    background-color: #2E3440;
 }

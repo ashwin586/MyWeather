@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Spinner } from "@chakra-ui/react";
+import BeatLoader from "react-spinners/BeatLoader";
 import axios from "axios";
 import "./Weather.css";
 
@@ -35,7 +35,7 @@ const Weather = () => {
   const searchCity = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${process.env.REACT_APP_OPENWEATHERAPI}`
       );
@@ -49,9 +49,19 @@ const Weather = () => {
 
   return (
     <>
+      {loading && (
+        <div className="spinner">
+          <BeatLoader
+            color="#43cea2"
+            loading={loading}
+            size={100}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        </div>
+      )}
       <div className="weather-container">
         <div className="search-wrapper">
-          {loading && <Spinner size="xl" />}
           <form onSubmit={(e) => searchCity(e)}>
             <input
               type="text"
