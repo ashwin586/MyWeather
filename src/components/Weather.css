@@ -15,6 +15,7 @@
 }
 
 input {
+  font-size: large;
   width: 300px;
   height: 30px;
   padding: 10px;
@@ -24,6 +25,7 @@ input {
 }
 
 .weather-info {
+  position: relative;
   color: #fff;
 }
 
@@ -68,5 +70,35 @@ input {
   width: 100vw;
   height: 100vh;
   z-index: 50;
-  background-color: rgba(0, 0, 0, 0.8)
+  background-color: rgba(0, 0, 0, 1)
+}
+
+.suggestions{
+  list-style: none;
+  color: black;
+  padding: 5px;
+  font-size: large;
+  cursor: pointer;
+}
+
+.suggestions:hover{
+  background-color: #FDF6E4;
+}
+
+.suggestions-wrapper{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 15px;
+  width: 340px;
+  height: 150px;
+  overflow-y: auto;
+  background-color: #fff;
+  border-radius: 10px;
+  z-index: 1;
+}
+
+hr {
+ color: #185a9d;
 }

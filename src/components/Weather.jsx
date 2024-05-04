@@ -9,6 +9,8 @@ const Weather = () => {
   const [lat, setLat] = useState(null);
   const [long, setLong] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+
   useEffect(() => {
     const defaultWeatherResponse = async () => {
       navigator.geolocation.getCurrentPosition(async (position) => {
@@ -32,6 +34,32 @@ const Weather = () => {
     defaultWeatherResponse();
   }, [lat, long]);
 
+  const fetchSuggestions = async (input) => {
+    if (!input) {
+      setSuggestions([]);
+      return;
+    }
+
+    const response = await axios.get(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+        input
+      )}.json?access_token=${process.env.REACT_APP_MAPBOXAPI}`
+    );
+    setSuggestions(response.data.features);
+  };
+
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    setCity(inputValue);
+    fetchSuggestions(inputValue);
+  };
+
+  const handleInputClick = (e, selectedPlace) => {
+    setCity(selectedPlace);
+    setSuggestions([]);
+    searchCity(e);
+  };
+
   const searchCity = async (e) => {
     e.preventDefault();
     try {
@@ -39,10 +67,31 @@ const Weather = () => {
       const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${process.env.REACT_APP_API}`
       );
+
       setData(response.data);
       setCity("");
+      setSuggestions([]);
     } catch (err) {
-      console.log(err);
+      try {
+        const mapboxResponse = await axios.get(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+            city
+          )}.json?access_token=${process.env.REACT_APP_MAPBOXAPI}`
+        );
+        if (mapboxResponse.data.features.length > 0) {
+          const location = mapboxResponse.data.features[0];
+          const weatherResponse = await axios.get(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${location.center[1]}&lon=${location.center[0]}&units=metric&appid=${process.env.REACT_APP_API}`
+          );
+          setData(weatherResponse.data);
+          setCity(location.place_name);
+          setSuggestions([]);
+        } else {
+          throw new Error('Location Not Found');
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
     setLoading(false);
   };
@@ -68,13 +117,32 @@ const Weather = () => {
               name="city"
               id="city"
               value={city}
-              onChange={(e) => setCity(e.target.value)}
+              onChange={handleInputChange}
               placeholder="Enter city name"
             />
           </form>
         </div>
+
         {data && (
           <div className="weather-info">
+            {suggestions && suggestions.length > 1 && (
+              <div className="suggestions-wrapper">
+                <ul>
+                  {suggestions.map((suggestion, index) => (
+                    <div key={index}>
+                      <li
+                        className="suggestions"
+                        key={index}
+                        onClick={(e) => handleInputClick(e, suggestion?.place_name)}
+                      >
+                        {suggestion?.place_name}
+                      </li>
+                      <hr />
+                    </div>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div className="temperature">
               {data?.weather && data?.weather[0] && (
                 <img
