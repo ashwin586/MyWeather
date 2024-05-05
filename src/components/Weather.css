@@ -11,7 +11,17 @@
 }
 
 .search-wrapper {
+  width: auto;
+  display: flex;
+  align-items: center;
+  background-color: white;
   margin: 20px;
+  border-radius: 10px;
+}
+
+.fa-icons{
+  padding: 5px;
+  cursor: pointer;
 }
 
 input {
@@ -22,6 +32,7 @@ input {
   outline: none;
   border: none;
   border-radius: 10px;
+  background-color: white;
 }
 
 .weather-info {

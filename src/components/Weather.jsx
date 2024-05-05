@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import BeatLoader from "react-spinners/BeatLoader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import "./Weather.css";
 
@@ -10,6 +12,7 @@ const Weather = () => {
   const [long, setLong] = useState(null);
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [xMark, setXMark] = useState(false);
 
   useEffect(() => {
     const defaultWeatherResponse = async () => {
@@ -60,6 +63,11 @@ const Weather = () => {
     searchCity(e);
   };
 
+  const handleInputTextRemove = () => {
+    setCity("");
+    setXMark(false);
+  };
+
   const searchCity = async (e) => {
     e.preventDefault();
     try {
@@ -69,6 +77,7 @@ const Weather = () => {
       );
 
       setData(response.data);
+      setXMark(true);
       setCity("");
       setSuggestions([]);
     } catch (err) {
@@ -85,9 +94,10 @@ const Weather = () => {
           );
           setData(weatherResponse.data);
           setCity(location.place_name);
+          setXMark(true);
           setSuggestions([]);
         } else {
-          throw new Error('Location Not Found');
+          throw new Error("Location Not Found");
         }
       } catch (error) {
         console.log(error);
@@ -111,6 +121,12 @@ const Weather = () => {
       )}
       <div className="weather-container">
         <div className="search-wrapper">
+          <FontAwesomeIcon
+            icon={faMagnifyingGlass}
+            size="lg"
+            color="black"
+            className="fa-icons"
+          />
           <form onSubmit={(e) => searchCity(e)}>
             <input
               type="text"
@@ -119,8 +135,12 @@ const Weather = () => {
               value={city}
               onChange={handleInputChange}
               placeholder="Enter city name"
+              autoComplete="off"
             />
           </form>
+          {xMark && (
+            <FontAwesomeIcon icon={faXmark} size="lg" className="fa-icons" onClick={handleInputTextRemove}/>
+          )}
         </div>
 
         {data && (
@@ -133,7 +153,9 @@ const Weather = () => {
                       <li
                         className="suggestions"
                         key={index}
-                        onClick={(e) => handleInputClick(e, suggestion?.place_name)}
+                        onClick={(e) =>
+                          handleInputClick(e, suggestion?.place_name)
+                        }
                       >
                         {suggestion?.place_name}
                       </li>
