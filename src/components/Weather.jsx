@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import BeatLoader from "react-spinners/BeatLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
+import useDebouncer from "../hooks/useDebouncer";
 import axios from "axios";
 import "./Weather.css";
 
@@ -14,13 +15,14 @@ const Weather = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [xMark, setXMark] = useState(false);
 
+  const debouncedCity = useDebouncer(city, 500);
+
   useEffect(() => {
     const defaultWeatherResponse = async () => {
       navigator.geolocation.getCurrentPosition(async (position) => {
         setLat(position.coords.latitude);
         setLong(position.coords.longitude);
       });
-
       try {
         if (lat && long) {
           setLoading(true);
@@ -37,24 +39,25 @@ const Weather = () => {
     defaultWeatherResponse();
   }, [lat, long]);
 
-  const fetchSuggestions = async (input) => {
-    if (!input) {
-      setSuggestions([]);
-      return;
-    }
-
-    const response = await axios.get(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-        input
-      )}.json?access_token=${process.env.REACT_APP_MAPBOXAPI}`
-    );
-    setSuggestions(response.data.features);
-  };
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (!debouncedCity) {
+        setSuggestions([]);
+        return;
+      }
+      const response = await axios.get(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          debouncedCity
+        )}.json?access_token=${process.env.REACT_APP_MAPBOXAPI}`
+      );
+      setSuggestions(response.data.features);
+    };
+    fetchSuggestions();
+  }, [debouncedCity]);
 
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     setCity(inputValue);
-    fetchSuggestions(inputValue);
   };
 
   const handleInputClick = (e, selectedPlace) => {
@@ -139,7 +142,12 @@ const Weather = () => {
             />
           </form>
           {xMark && (
-            <FontAwesomeIcon icon={faXmark} size="lg" className="fa-icons" onClick={handleInputTextRemove}/>
+            <FontAwesomeIcon
+              icon={faXmark}
+              size="lg"
+              className="fa-icons"
+              onClick={handleInputTextRemove}
+            />
           )}
         </div>
 
