@@ -174,13 +174,15 @@ const Weather = () => {
               </div>
             )}
             <div className="temperature">
-              {data?.weather && data?.weather[0] && (
-                <img
-                  src={`https://openweathermap.org/img/wn/${data?.weather[0]?.icon}@2x.png`}
-                  alt="Weather-Icon"
-                />
-              )}
-              <h1>{`${Math.floor(data?.main?.temp)}°C`}</h1>
+              <div className="temp-img">
+                {data?.weather && data?.weather[0] && (
+                  <img
+                    src={`https://openweathermap.org/img/wn/${data?.weather[0]?.icon}@2x.png`}
+                    alt="Weather-Icon"
+                  />
+                )}
+              </div>
+              <h1 className="temp-deg">{`${Math.floor(data?.main?.temp)}°C`}</h1>
               <div className="temp-details">
                 <h4>Max Temp: {Math.floor(data?.main?.temp_max)}°C</h4>
                 <h4>Min Temp: {Math.floor(data?.main?.temp_min)}°C</h4>
@@ -189,12 +191,18 @@ const Weather = () => {
             <h2 className="place">
               {data?.name}, {data?.sys?.country}
             </h2>
-            <div className="other-details">
+            <div className="other-details-md">
               <h4>
                 <span className="gap">Humidity: {data?.main?.humidity}%</span> |{" "}
                 <span className="gap">
                   Pressure: {data?.main?.pressure} hPa
                 </span>
+              </h4>
+            </div>
+            <div className="other-details-sm">
+              <h4>
+                <p>Humidity: {data?.main?.humidity}%</p>
+                <p>Pressure: {data?.main?.pressure} hPa</p>
               </h4>
             </div>
           </div>
